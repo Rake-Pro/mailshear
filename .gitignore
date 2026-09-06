@@ -1,0 +1,10 @@
+/dist/
+*.db
+*.db-*
+/bin/
+/mailshear
+/mailshear.exe
+__pycache__/
+vendor/**/CLAUDE.md
+CLAUDE.md
+.claude/

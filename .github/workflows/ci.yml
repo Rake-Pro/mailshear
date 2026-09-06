@@ -1,0 +1,43 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+
+      - name: Vet
+        run: go vet ./...
+
+      - name: Format check
+        run: |
+          fmt_out="$(gofmt -l cmd internal tools)"
+          if [ -n "$fmt_out" ]; then
+            echo "gofmt needs to be run on:"
+            echo "$fmt_out"
+            exit 1
+          fi
+
+      - name: Test
+        run: go test -race ./...
+
+      - name: Build
+        run: go build -mod=vendor ./...
+
+      - name: Cross-compile check (windows)
+        run: GOOS=windows go build ./...
+
+      - name: Cross-compile check (darwin)
+        run: GOOS=darwin go build ./...
