@@ -123,6 +123,7 @@ const commentedOAuthBlock = `    # oauth:                        # with auth: oa
     #   auth_url: ""                # custom only
     #   token_url: ""
     #   scopes: []
+    #   redirect_host: 127.0.0.1    # or localhost; must match the provider's registered redirect
 `
 
 // renderOAuth writes the account's oauth: block, or the commented template
@@ -149,6 +150,9 @@ func renderOAuth(a Account) string {
 		fmt.Fprintf(&b, "      auth_url: %s\n", strconv.Quote(o.AuthURL))
 		fmt.Fprintf(&b, "      token_url: %s\n", strconv.Quote(o.TokenURL))
 		fmt.Fprintf(&b, "      scopes: %s\n", yamlStringList(o.Scopes))
+	}
+	if o.RedirectHost != "" {
+		fmt.Fprintf(&b, "      redirect_host: %s\n", strconv.Quote(o.RedirectHost))
 	}
 	return b.String()
 }

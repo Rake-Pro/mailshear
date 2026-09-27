@@ -60,6 +60,10 @@ type OAuth struct {
 	AuthURL  string   `yaml:"auth_url"`
 	TokenURL string   `yaml:"token_url"`
 	Scopes   []string `yaml:"scopes"`
+	// RedirectHost is the loopback hostname in the redirect URI, 127.0.0.1
+	// (the default when empty) or localhost, to match the provider's
+	// registration.
+	RedirectHost string `yaml:"redirect_host"`
 }
 
 type SMTP struct {
@@ -537,6 +541,11 @@ func (a Account) OAuthSpec() (oauth.ProviderSpec, error) {
 	}
 	if strings.TrimSpace(o.ClientID) == "" {
 		return oauth.ProviderSpec{}, fmt.Errorf("auth: oauth needs oauth.client_id; see docs/oauth.md")
+	}
+	switch o.RedirectHost {
+	case "", "127.0.0.1", "localhost":
+	default:
+		return oauth.ProviderSpec{}, fmt.Errorf("auth: invalid oauth.redirect_host %q; must be 127.0.0.1 or localhost", o.RedirectHost)
 	}
 
 	name := strings.ToLower(strings.TrimSpace(o.Provider))

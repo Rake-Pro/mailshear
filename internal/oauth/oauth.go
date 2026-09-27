@@ -79,6 +79,10 @@ type Client struct {
 	ClientID     string
 	ClientSecret string
 	Spec         ProviderSpec
+	// RedirectHost is the hostname written into the loopback redirect URI:
+	// "127.0.0.1" (empty means this) or "localhost". It has to match what is
+	// registered with the provider. The listener binds 127.0.0.1 either way.
+	RedirectHost string
 
 	// HTTP overrides the transport, for tests. nil means a client with a
 	// 30 second timeout.
@@ -178,7 +182,11 @@ func (c *Client) Login(ctx context.Context, onURL func(string)) (Token, error) {
 	if err != nil {
 		return Token{}, fmt.Errorf("oauth: opening the loopback listener: %w", err)
 	}
-	redirect := "http://" + ln.Addr().String() + "/callback"
+	host := "127.0.0.1"
+	if c.RedirectHost == "localhost" {
+		host = "localhost"
+	}
+	redirect := fmt.Sprintf("http://%s:%d/callback", host, ln.Addr().(*net.TCPAddr).Port)
 
 	ctx, cancel := context.WithTimeout(ctx, loginTimeout)
 	defer cancel()

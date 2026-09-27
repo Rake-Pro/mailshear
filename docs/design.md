@@ -168,6 +168,7 @@ YAML, one file, multiple accounts allowed.
 | `accounts[].oauth.auth_url` | string | - | yes, with `provider: custom` | authorization endpoint |
 | `accounts[].oauth.token_url` | string | - | yes, with `provider: custom` | token endpoint |
 | `accounts[].oauth.scopes` | []string | - | yes, with `provider: custom` | requested OAuth scopes |
+| `accounts[].oauth.redirect_host` | string | `127.0.0.1` | no | hostname in the loopback redirect URI, `127.0.0.1` or `localhost`; must match the provider registration, see [oauth.md](oauth.md#redirect-host) |
 | `protect.domains` | []string | `[]` | no | sender domains never acted on |
 | `protect.addresses` | []string | `[]` | no | sender addresses never acted on |
 | `protect.list_ids` | []string | `[]` | no | List-Id values never acted on |
@@ -200,6 +201,7 @@ accounts:
     #   auth_url: ""                # custom only
     #   token_url: ""
     #   scopes: []
+    #   redirect_host: 127.0.0.1    # or localhost; must match the provider's registered redirect
 
 protect:
   domains: ["chase.com", "fidelity.com", "irs.gov"]

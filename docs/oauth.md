@@ -18,11 +18,32 @@ External plus Testing expires refresh tokens after 7 days, so you sign in again 
 
 1. Register an app at https://entra.microsoft.com > Applications > App registrations > New registration (any name).
 2. Supported account types: "Personal Microsoft accounts and any organizational directory" for a personal account, "Single tenant" for a work account only.
-3. Authentication > Add a platform: **Mobile and desktop applications**, redirect URI `http://localhost`.
+3. Authentication > Add a platform: **Mobile and desktop applications**, custom redirect URI `http://127.0.0.1` (no port; the loopback port is chosen per sign-in). If your tenant only accepts `http://localhost`, register that instead and set `redirect_host: localhost` in the account's `oauth:` block (see [Redirect host](#redirect-host)).
 4. Authentication > Advanced settings: set **Allow public client flows** to Yes.
 5. API permissions > Add a permission > APIs my organization uses > Office 365 Exchange Online > Delegated: add `IMAP.AccessAsUser.All` and `SMTP.Send`.
 6. API permissions > Microsoft Graph > Delegated: add `offline_access`.
 7. Overview: copy the **Application (client) ID**, and the **Directory (tenant) ID** for a single-tenant app. Do not create a client secret: a public client that sends one is rejected.
+
+## Redirect host
+
+mailshear listens on `127.0.0.1` on a random port for the sign-in callback. `oauth.redirect_host` only sets the hostname written into the redirect URI sent to the provider; the listener binds `127.0.0.1` either way.
+
+| Value | Redirect URI sent | Register with the provider |
+|---|---|---|
+| `127.0.0.1` (default, also when omitted) | `http://127.0.0.1:<port>/callback` | `http://127.0.0.1` |
+| `localhost` | `http://localhost:<port>/callback` | `http://localhost` |
+
+```
+accounts:
+  - name: outlook
+    auth: oauth
+    oauth:
+      provider: microsoft
+      client_id: "<application-client-id>"
+      redirect_host: localhost
+```
+
+With `localhost`, the browser must resolve `localhost` to `127.0.0.1`; a browser that tries only `::1` will not reach the listener. Google desktop clients accept either value.
 
 ## Troubleshooting
 
@@ -32,7 +53,7 @@ External plus Testing expires refresh tokens after 7 days, so you sign in again 
 | `invalid_grant` after about a week on Google | External plus Testing expires refresh tokens after 7 days | sign in again from the accounts screen, publish the app, or use an Internal Workspace app |
 | `invalid_grant` at any other time | the token was revoked, or the client id changed | sign in again |
 | `invalid_client` | wrong client id, or a Google desktop client with no secret entered | check both against the provider's console |
-| `unauthorized_client`, or a redirect mismatch on Microsoft | no Mobile and desktop platform, or public client flows are off | add the platform with redirect `http://localhost` and set Allow public client flows to Yes |
+| `unauthorized_client`, or a redirect mismatch on Microsoft | no Mobile and desktop platform, public client flows are off, or the registered redirect host differs from `oauth.redirect_host` | add the platform with a redirect matching `redirect_host` (`http://127.0.0.1` by default) and set Allow public client flows to Yes |
 | `AADSTS65001` admin consent required | a work or school tenant has not consented | ask the admin to grant consent for `IMAP.AccessAsUser.All` and `SMTP.Send` |
 | `does not advertise AUTH=XOAUTH2` | the server has no XOAUTH2, or IMAP is off for the mailbox | enable IMAP, or switch the auth method back to App password |
 | `the token was rejected` on Gmail | expired refresh token, or IMAP disabled in Gmail settings | sign in again, and check Gmail > Settings > Forwarding and POP/IMAP |

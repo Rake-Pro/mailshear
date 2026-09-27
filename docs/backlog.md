@@ -4,6 +4,7 @@ Items the owner has asked for that are not scheduled yet. Newest first.
 
 | Added | Item | Notes |
 |---|---|---|
+| 2026-09-27 | Live-test Microsoft sign-in with both `oauth.redirect_host` values | `redirect_host` (default `127.0.0.1`, or `localhost`) makes the loopback redirect hostname configurable. Neither value has been tried against a real Entra app registration yet; confirm which registered URI Entra matches for each and fix `docs/oauth.md` if the recommended default is wrong. |
 | 2026-09-06 | Recordings for the history and maintenance screens | Only the accounts screen was added to `docs/demo`; the run history and the maintenance menu have no GIF yet. `record.py` takes one function per recording. |
 | 2026-09-06 | Drop the unreachable standalone review path | `Options.Embedded: false` is now only exercised by tests: the review screen is always one step of the flow. |
 | 2026-09-06 | An account edit still drops an owned key the new account leaves empty | `UpsertAccount` now edits the account mapping in place, so comments inside the block survive. A key it owns that the new account no longer carries (`trash: ""` on an account with no override, the `oauth:` block after a switch back to a password) is still removed, and its comment goes with it. Dropping the stale `oauth:` block is the point; `trash: ""` is collateral. |

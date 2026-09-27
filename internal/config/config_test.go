@@ -512,6 +512,16 @@ accounts:
       provider: custom
       client_id: "x"
 `},
+		{"bad redirect host", `
+accounts:
+  - name: a
+    host: imap.gmail.com
+    username: me@gmail.com
+    auth: oauth
+    oauth:
+      client_id: "x"
+      redirect_host: "0.0.0.0"
+`},
 	}
 	for _, tc := range cases {
 		if _, err := Load(writeTemp(t, tc.body)); err == nil {

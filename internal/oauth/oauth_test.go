@@ -202,6 +202,33 @@ func TestLoginEndToEnd(t *testing.T) {
 	}
 }
 
+// RedirectHost localhost changes only the hostname in the redirect URI; the
+// callback still arrives on the 127.0.0.1 listener.
+func TestLoginRedirectHostLocalhost(t *testing.T) {
+	p := newFakeProvider(t)
+	p.tokenJSON = `{"access_token":"at-1","token_type":"Bearer","expires_in":3600}`
+	c := &Client{ClientID: "client-1", Spec: p.spec(), RedirectHost: "localhost"}
+	done := make(chan struct{})
+	c.OpenURL = func(u string) error {
+		go func() {
+			defer close(done)
+			_ = browse(t, u, url.Values{"code": {"the-code"}})
+		}()
+		return nil
+	}
+	if _, err := c.Login(context.Background(), nil); err != nil {
+		t.Fatalf("Login: %v", err)
+	}
+	<-done
+	redirect := p.authQuery.Get("redirect_uri")
+	if !strings.HasPrefix(redirect, "http://localhost:") || !strings.HasSuffix(redirect, "/callback") {
+		t.Fatalf("redirect_uri = %q, want a localhost callback", redirect)
+	}
+	if p.tokenForm.Get("redirect_uri") != redirect {
+		t.Fatalf("token redirect_uri = %q, want %q", p.tokenForm.Get("redirect_uri"), redirect)
+	}
+}
+
 // A loopback port is reachable by anything on the machine, so a request with
 // the wrong state is answered 400 and otherwise ignored: it must not be able
 // to end a sign-in the user is still in the middle of. The real callback,

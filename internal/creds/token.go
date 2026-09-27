@@ -80,6 +80,7 @@ func OAuthClient(a config.Account) (*oauth.Client, error) {
 		ClientID:     a.OAuth.ClientID,
 		ClientSecret: a.OAuth.ClientSecret,
 		Spec:         spec,
+		RedirectHost: a.OAuth.RedirectHost,
 	}, nil
 }
 

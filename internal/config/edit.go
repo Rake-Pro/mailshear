@@ -40,6 +40,7 @@ type oauthDoc struct {
 	AuthURL      string   `yaml:"auth_url,omitempty"`
 	TokenURL     string   `yaml:"token_url,omitempty"`
 	Scopes       []string `yaml:"scopes,omitempty"`
+	RedirectHost string   `yaml:"redirect_host,omitempty"`
 }
 
 func toDoc(a Account) accountDoc {
@@ -61,6 +62,7 @@ func toDoc(a Account) accountDoc {
 		d.OAuth = &oauthDoc{
 			Provider: o.Provider, ClientID: o.ClientID, ClientSecret: o.ClientSecret,
 			Tenant: o.Tenant, AuthURL: o.AuthURL, TokenURL: o.TokenURL, Scopes: o.Scopes,
+			RedirectHost: o.RedirectHost,
 		}
 	}
 	return d
