@@ -150,6 +150,36 @@ Subjects and addresses are personal data even on the user's own disk. The mainte
 
 YAML, one file, multiple accounts allowed.
 
+| Key | Type | Default | Required | Description |
+|---|---|---|---|---|
+| `accounts[].name` | string | - | yes | account name (letters, digits, dot, underscore, hyphen; max 64 chars; no leading dot) |
+| `accounts[].host` | string | - | yes | IMAP host |
+| `accounts[].port` | int | `993` | no | IMAP port |
+| `accounts[].username` | string | - | yes | IMAP username |
+| `accounts[].auth` | string | `file` | no | `file` \| `oauth` \| `env:NAME` \| `file:PATH` (`keyring` is a deprecated alias for `file`) |
+| `accounts[].folders` | []string | provider default | no | folders to scan; empty defaults from the detected provider |
+| `accounts[].trash` | string | `""` | no | Trash folder override; empty discovers it via the IMAP special-use attribute |
+| `accounts[].smtp.host` | string | provider default | no | SMTP host; enables `mailto:` unsubscribes |
+| `accounts[].smtp.port` | int | provider default | no | SMTP port |
+| `accounts[].oauth.provider` | string | detected from host | required with `auth: oauth` if not detectable | `google` \| `microsoft` \| `custom` |
+| `accounts[].oauth.client_id` | string | - | yes, with `auth: oauth` | your own OAuth client id; see [oauth.md](oauth.md) |
+| `accounts[].oauth.client_secret` | string | `""` | Google desktop clients only | empty for Microsoft public clients |
+| `accounts[].oauth.tenant` | string | `common` | no | Entra tenant id, `microsoft` provider only |
+| `accounts[].oauth.auth_url` | string | - | yes, with `provider: custom` | authorization endpoint |
+| `accounts[].oauth.token_url` | string | - | yes, with `provider: custom` | token endpoint |
+| `accounts[].oauth.scopes` | []string | - | yes, with `provider: custom` | requested OAuth scopes |
+| `protect.domains` | []string | `[]` | no | sender domains never acted on |
+| `protect.addresses` | []string | `[]` | no | sender addresses never acted on |
+| `protect.list_ids` | []string | `[]` | no | List-Id values never acted on |
+| `protect.keep_transactional` | bool | `true` | no | never delete receipts, bills, orders, bookings and security mail |
+| `protect.keep_subjects` | []string | `[]` | no | extra subject phrases to hold back; case-insensitive substring or `/regexp/` |
+| `unsubscribe.http_get` | bool | `true` | no | attempt plain https links, not just one-click |
+| `unsubscribe.follow_redirects` | int | `5` | no | redirect limit for the HTTP-link unsubscribe method |
+| `unsubscribe.timeout_seconds` | int | `15` | no | per-request timeout |
+| `unsubscribe.per_host_rps` | float | `1` | no | rate limit per destination host |
+| `unsubscribe.allow_private_hosts` | bool | `false` | no | let unsubscribe links reach loopback, link-local and RFC 1918 / ULA addresses |
+| `scan.gmail_prefilter` | string | `""` | no | optional `X-GM-RAW` query, e.g. `category:promotions` |
+
 ```yaml
 accounts:
   - name: personal
@@ -183,6 +213,7 @@ unsubscribe:
   follow_redirects: 5
   timeout_seconds: 15
   per_host_rps: 1
+  allow_private_hosts: false   # true lets unsubscribe links reach your own network
 
 scan:
   gmail_prefilter: ""     # optional X-GM-RAW query, e.g. "category:promotions"
