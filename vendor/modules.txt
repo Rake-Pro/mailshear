@@ -3,7 +3,7 @@
 charm.land/bubbles/v2/help
 charm.land/bubbles/v2/key
 charm.land/bubbles/v2/spinner
-# charm.land/bubbletea/v2 v2.1.0
+# charm.land/bubbletea/v2 v2.1.1
 ## explicit; go 1.26.0
 charm.land/bubbletea/v2
 # charm.land/lipgloss/v2 v2.0.6
