@@ -38,7 +38,7 @@ github.com/clipperhouse/uax29/v2/graphemes
 # github.com/dustin/go-humanize v1.0.1
 ## explicit; go 1.16
 github.com/dustin/go-humanize
-# github.com/emersion/go-imap/v2 v2.0.0-beta.8
+# github.com/emersion/go-imap/v2 v2.0.0-beta.9
 ## explicit; go 1.18
 github.com/emersion/go-imap/v2
 github.com/emersion/go-imap/v2/imapclient
